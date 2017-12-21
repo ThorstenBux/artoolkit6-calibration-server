@@ -1,0 +1,36 @@
+php:
+  image: thorbux/php56-apache:1.0
+  #Give the container a specific name
+  container_name: calib_camera_php
+  ports:
+  - 9090:80
+  volumes:
+  - ./:/var/www/html/
+  - ./php.ini:/usr/local/etc/php/php.ini
+  links:
+  - mysql
+
+mysql:
+  image: mysql:5.7
+  #Give the container a specific name
+  container_name: calib_camera_mysql
+  ports:
+  - 3307:3306
+#  volumes:
+#    - ./dockerDataContainer/datastructure:/var/lib/mysql
+  environment:
+  - MYSQL_ROOT_PASSWORD=blob7\"Dakota
+  volumes_from:
+# Use the volumes from the 'data' container 
+  - data
+
+data:
+  container_name: calibcamera-datastore
+  image: thorbux/calibcamera-datastore:2.0
+  entrypoint: /bin/bash
+
+#Start mySql standalone
+# docker run -p 3306:3306 --name calibcamera-mysql -e MYSQL_ROOT_PASSWORD=blob7\"Dakota -d mysql:5.7
+
+#Backup of data volumes
+# docker run --rm --volumes-from data -v $(pwd):/backup debian tar cvf /backup/backup.tar /var/lib/postgresql/data
